@@ -164,3 +164,4 @@ cython_debug/
 
 node_modules/
 solr-9.7.0/
+dump.rdb
