@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import FastAPI
 import json
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,3 +21,16 @@ with open("data.json") as f:
 @app.get("/")
 async def root():
     return music_data
+
+
+@app.get("/autocomplete/")
+async def autocomplete(prefix: str) -> List[str]:
+    results = []
+    prefix_lower = prefix.lower()
+
+    for band in music_data:
+        band_name = band["name"].lower()
+
+        if band_name.startswith(prefix_lower):
+            results.append(band_name)
+    return results
