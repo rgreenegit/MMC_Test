@@ -31,7 +31,17 @@ async def autocomplete(prefix: str) -> List[str]:
 
     for band in music_data:
         band_name = band["name"]
-
         if band_name.lower().startswith(prefix_lower):
             results.append(band_name)
+
+        for album in band["albums"]:
+            album_title = album["title"]
+            if album_title.lower().startswith(prefix_lower):
+                results.append(album_title)
+
+            for song in album["songs"]:
+                song_title = song["title"]
+                if song_title.lower().startswith(prefix_lower):
+                    results.append(song_title)
+
     return results
