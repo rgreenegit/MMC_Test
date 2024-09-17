@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import axios from 'axios';
+import { debounce } from 'lodash';
 import './AutocompleteForm.css';
 
 const apiUrl = "http://127.0.0.1:8000";
@@ -11,35 +12,41 @@ const AutocompleteForm = () => {
   const [activeField, setActiveField] = useState('');
   const [suggestions, setSuggestions] = useState([]);
 
-  const handleInputChange = async (field, value) => {
+  const debouncedFetchSuggestions = useRef(
+    debounce(async (field, value, bandName, albumTitle) => {
+      const params = {};
+
+      if (field === 'albumTitle' && bandName) {
+        params.bandName = bandName;
+      }
+
+      if (field === 'songTitle' && bandName && albumTitle) {
+        params.bandName = bandName;
+        params.albumTitle = albumTitle;
+      }
+
+      if (value.length > 0) {
+        try {
+          const response = await axios.get(`${apiUrl}/autocomplete/?prefix=${value}`, { params });
+          setSuggestions(response.data);
+        } catch (error) {
+          console.error('Error fetching autocomplete suggestions:', error);
+        }
+      } else {
+        setSuggestions([]);
+      }
+    }, 300)
+  ).current;
+
+  const handleInputChange = useCallback((field, value) => {
     if (field === 'bandName') setBandName(value);
     if (field === 'albumTitle') setAlbumTitle(value);
     if (field === 'songTitle') setSongTitle(value);
 
     setActiveField(field);
 
-    const params = {};
-
-    if (field === 'albumTitle' && bandName) {
-      params.bandName = bandName;
-    }
-
-    if (field === 'songTitle' && bandName && albumTitle) {
-      params.bandName = bandName;
-      params.albumTitle = albumTitle;
-    }
-
-    if (value.length > 0) {
-      try {
-        const response = await axios.get(`${apiUrl}/autocomplete/?prefix=${value}`, { params });
-        setSuggestions(response.data);
-      } catch (error) {
-        console.error('Error fetching autocomplete suggestions:', error);
-      }
-    } else {
-      setSuggestions([]);
-    }
-  };
+    debouncedFetchSuggestions(field, value, bandName, albumTitle);
+  }, [bandName, albumTitle]);
 
   const handleSuggestionClick = (suggestion) => {
     if (activeField === 'bandName') {
