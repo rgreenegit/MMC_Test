@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './AutocompleteForm.css';
 
 const apiUrl = "http://127.0.0.1:8000";
 
@@ -30,7 +31,7 @@ const AutocompleteForm = () => {
 
     if (value.length > 0) {
       try {
-        const response = await axios.get(`${apiUrl}/autocomplete/?prefix=${value}`, {params});
+        const response = await axios.get(`${apiUrl}/autocomplete/?prefix=${value}`, { params });
         setSuggestions(response.data);
       } catch (error) {
         console.error('Error fetching autocomplete suggestions:', error);
@@ -48,8 +49,6 @@ const AutocompleteForm = () => {
     } else if (activeField === 'songTitle') {
       setSongTitle(suggestion);
     }
-
-    // Clear suggestions after selection
     setSuggestions([]);
   };
 
@@ -65,9 +64,9 @@ const AutocompleteForm = () => {
   const isFormValid = bandName && albumTitle && songTitle;
 
   return (
-    <div>
-      <h2>Autocomplete Band, Album, and Song Search</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="form-container">
+      <h2>MMC Autocomplete Music Player</h2>
+      <form onSubmit={handleSubmit} className="form">
         <label>
           Band Name:
           <input
@@ -75,7 +74,17 @@ const AutocompleteForm = () => {
             value={bandName}
             onChange={(e) => handleInputChange('bandName', e.target.value)}
             placeholder="Type band name"
+            className="input"
           />
+          {activeField === 'bandName' && suggestions.length > 0 && (
+            <ul className="suggestions">
+              {suggestions.map((suggestion, index) => (
+                <li key={index} onClick={() => handleSuggestionClick(suggestion)} className="suggestion-item">
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
+          )}
         </label>
 
         <label>
@@ -85,8 +94,18 @@ const AutocompleteForm = () => {
             value={albumTitle}
             onChange={(e) => handleInputChange('albumTitle', e.target.value)}
             placeholder="Type album title"
+            className="input"
             disabled={!bandName}
           />
+          {activeField === 'albumTitle' && suggestions.length > 0 && (
+            <ul className="suggestions">
+              {suggestions.map((suggestion, index) => (
+                <li key={index} onClick={() => handleSuggestionClick(suggestion)} className="suggestion-item">
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
+          )}
         </label>
 
         <label>
@@ -96,24 +115,24 @@ const AutocompleteForm = () => {
             value={songTitle}
             onChange={(e) => handleInputChange('songTitle', e.target.value)}
             placeholder="Type song title"
+            className="input"
             disabled={!albumTitle}
           />
+          {activeField === 'songTitle' && suggestions.length > 0 && (
+            <ul className="suggestions">
+              {suggestions.map((suggestion, index) => (
+                <li key={index} onClick={() => handleSuggestionClick(suggestion)} className="suggestion-item">
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
+          )}
         </label>
 
-        <button type="submit" disabled={!isFormValid}>View</button>
+        <button type="submit" disabled={!isFormValid} className="submit-btn">
+          🎧 Listen
+        </button>
       </form>
-
-      <div>
-        {suggestions.length > 0 && (
-          <ul>
-            {suggestions.map((suggestion, index) => (
-              <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
-                {suggestion}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
     </div>
   );
 };
