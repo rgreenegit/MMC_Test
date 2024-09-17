@@ -17,9 +17,20 @@ const AutocompleteForm = () => {
 
     setActiveField(field);
 
+    const params = {};
+
+    if (field === 'albumTitle' && bandName) {
+      params.bandName = bandName;
+    }
+
+    if (field === 'songTitle' && bandName && albumTitle) {
+      params.bandName = bandName;
+      params.albumTitle = albumTitle;
+    }
+
     if (value.length > 0) {
       try {
-        const response = await axios.get(`${apiUrl}/autocomplete/?prefix=${value}`);
+        const response = await axios.get(`${apiUrl}/autocomplete/?prefix=${value}`, {params});
         setSuggestions(response.data);
       } catch (error) {
         console.error('Error fetching autocomplete suggestions:', error);
@@ -59,6 +70,7 @@ const AutocompleteForm = () => {
             value={albumTitle}
             onChange={(e) => handleInputChange('albumTitle', e.target.value)}
             placeholder="Type album title"
+            disabled={!bandName}
           />
         </label>
 
@@ -69,6 +81,7 @@ const AutocompleteForm = () => {
             value={songTitle}
             onChange={(e) => handleInputChange('songTitle', e.target.value)}
             placeholder="Type song title"
+            disabled={!albumTitle}
           />
         </label>
 
