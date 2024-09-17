@@ -39,9 +39,16 @@ const AutocompleteForm = () => {
   ).current;
 
   const handleInputChange = useCallback((field, value) => {
-    if (field === 'bandName') setBandName(value);
-    if (field === 'albumTitle') setAlbumTitle(value);
-    if (field === 'songTitle') setSongTitle(value);
+    if (field === 'bandName') {
+      setBandName(value);   
+      setAlbumTitle('');
+      setSongTitle('');
+    } else if (field === 'albumTitle') {
+      setAlbumTitle(value);
+      setSongTitle('');
+    } else if (field === 'songTitle') {
+      setSongTitle(value);
+    }
 
     setActiveField(field);
 
