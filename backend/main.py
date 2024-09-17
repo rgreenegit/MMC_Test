@@ -1,19 +1,20 @@
 from typing import List
 from fastapi import FastAPI
-import json
 from fastapi.middleware.cors import CORSMiddleware
+import json
+
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Your frontend URL
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Load Data
+
 with open("data.json") as f:
     music_data = json.load(f)
 
@@ -29,8 +30,8 @@ async def autocomplete(prefix: str) -> List[str]:
     prefix_lower = prefix.lower()
 
     for band in music_data:
-        band_name = band["name"].lower()
+        band_name = band["name"]
 
-        if band_name.startswith(prefix_lower):
+        if band_name.lower().startswith(prefix_lower):
             results.append(band_name)
     return results
