@@ -5,7 +5,7 @@ import './AutocompleteForm.css';
 
 const apiUrl = "http://127.0.0.1:8000";
 
-const AutocompleteForm = () => {
+const AutocompleteFormTrie = () => {
   const [bandName, setBandName] = useState('');
   const [albumTitle, setAlbumTitle] = useState('');
   const [songTitle, setSongTitle] = useState('');
@@ -27,7 +27,7 @@ const AutocompleteForm = () => {
 
       if (value.length > 0) {
         try {
-          const response = await axios.get(`${apiUrl}/autocomplete/?prefix=${value}`, { params });
+          const response = await axios.get(`${apiUrl}/autocomplete/trie/?prefix=${value}`, { params });
           setSuggestions(response.data);
         } catch (error) {
           console.error('Error fetching autocomplete suggestions:', error);
@@ -78,9 +78,9 @@ const AutocompleteForm = () => {
   const isFormValid = bandName && albumTitle && songTitle;
 
   return (
-    <div className="form-container">
+    <div className="form-container form-container-trie">
       <h2>MMC Autocomplete Music Player</h2>
-      <p>Basic backend prefix matching with string functions</p>
+      <p>Backend prefix matching with custome Trie data structure</p>
       <form onSubmit={handleSubmit} className="form">
         <label>
           Band Name:
@@ -152,4 +152,4 @@ const AutocompleteForm = () => {
   );
 };
 
-export default AutocompleteForm;
+export default AutocompleteFormTrie;
