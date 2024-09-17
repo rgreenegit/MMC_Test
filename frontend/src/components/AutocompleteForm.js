@@ -40,6 +40,19 @@ const AutocompleteForm = () => {
     }
   };
 
+  const handleSuggestionClick = (suggestion) => {
+    if (activeField === 'bandName') {
+      setBandName(suggestion);
+    } else if (activeField === 'albumTitle') {
+      setAlbumTitle(suggestion);
+    } else if (activeField === 'songTitle') {
+      setSongTitle(suggestion);
+    }
+
+    // Clear suggestions after selection
+    setSuggestions([]);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted:', {
@@ -92,7 +105,9 @@ const AutocompleteForm = () => {
         {suggestions.length > 0 && (
           <ul>
             {suggestions.map((suggestion, index) => (
-              <li key={index}>{suggestion}</li>
+              <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                {suggestion}
+              </li>
             ))}
           </ul>
         )}
