@@ -62,6 +62,8 @@ const AutocompleteForm = () => {
     });
   };
 
+  const isFormValid = bandName && albumTitle && songTitle;
+
   return (
     <div>
       <h2>Autocomplete Band, Album, and Song Search</h2>
@@ -98,7 +100,7 @@ const AutocompleteForm = () => {
           />
         </label>
 
-        <button type="submit">View</button>
+        <button type="submit" disabled={!isFormValid}>View</button>
       </form>
 
       <div>
