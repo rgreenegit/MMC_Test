@@ -5,11 +5,15 @@
   height: 100vh;
   flex-direction: column;
   padding: 20px;
-  background-color: #51c2ff;
+  background-color: #5bbdf1;
 }
 
 .form-container-trie {
-  background-color: #45e4c9;
+  background-color: #79edbb;
+}
+
+.form-container-db {
+  background-color: #9795ee;
 }
 
 .form {

@@ -26,6 +26,13 @@ async def root():
     return music_data
 
 
+@app.get("/autocomplete/db/")
+async def autocomplete_v2(prefix: str, bandName: Optional[str] = None, albumTitle: Optional[str] = None) -> List[str]:
+    suggestions = []
+    prefix_lower = prefix.lower()
+    return suggestions
+
+
 @app.get("/autocomplete/trie/")
 async def autocomplete_v2(prefix: str, bandName: Optional[str] = None, albumTitle: Optional[str] = None) -> List[str]:
     suggestions = []
