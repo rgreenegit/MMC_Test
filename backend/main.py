@@ -33,23 +33,23 @@ async def root():
 @app.get("/autocomplete/db/")
 async def autocomplete_v2(prefix: str, bandName: Optional[str] = None, albumTitle: Optional[str] = None) -> List[str]:
     suggestions = []
-    prefix_lower = prefix.lower()
+    prefix_filtered = "+".join(prefix.lower().split())
     if not bandName and not albumTitle:
         solr_results = solr_client.search(
-            f"band_name:{prefix_lower}")
+            f"band_name:{prefix_filtered}")
         suggestions = list(set(doc["band_name"]
                            for doc in solr_results.docs if "band_name" in doc))
     elif bandName and not albumTitle:
         bandName_filtered = "+".join(bandName.lower().split())
         solr_results = solr_client.search(
-            f"band_name:{bandName_filtered} AND album_title:{prefix_lower}")
+            f"band_name:{bandName_filtered} AND album_title:{prefix_filtered}")
         suggestions = list(set(doc["album_title"]
                            for doc in solr_results.docs if "album_title" in doc))
     elif bandName and albumTitle:
         bandName_filtered = "+".join(bandName.lower().split())
         albumTitle_filtered = "+".join(albumTitle.lower().split())
         solr_results = solr_client.search(
-            f"band_name:{bandName_filtered} AND album_title:{albumTitle_filtered } AND song_title:{prefix_lower}")
+            f"band_name:{bandName_filtered} AND album_title:{albumTitle_filtered } AND song_title:{prefix_filtered}")
         suggestions = list(set(doc["song_title"]
                            for doc in solr_results.docs if "song_title" in doc))
     return suggestions
