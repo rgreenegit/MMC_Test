@@ -26,31 +26,27 @@ async def root():
 
 @app.get("/autocomplete/")
 async def autocomplete(prefix: str, bandName: Optional[str] = None, albumTitle: Optional[str] = None) -> List[str]:
-    results = []
+    suggestions = []
     prefix_lower = prefix.lower()
 
     if not bandName and not albumTitle:
-        for band in music_data:
-            band_name = band["name"]
-            if band_name.lower().startswith(prefix_lower):
-                results.append(band_name)
+        suggestions = [
+            band["name"] for band in music_data if band["name"].lower().startswith(prefix.lower())]
 
     elif bandName and not albumTitle:
-        for band in music_data:
-            if band["name"].lower() == bandName.lower():
-                for album in band["albums"]:
-                    album_title = album["title"]
-                    if album_title.lower().startswith(prefix_lower):
-                        results.append(album_title)
+        suggestions = [
+            album["title"]
+            for band in music_data if band["name"].lower() == bandName.lower()
+            for album in band["albums"] if album["title"].lower().startswith(prefix_lower)
+        ]
 
     elif bandName and albumTitle:
-        for band in music_data:
-            if band["name"].lower() == bandName.lower():
-                for album in band["albums"]:
-                    if album["title"].lower() == albumTitle.lower():
-                        for song in album["songs"]:
-                            song_title = song["title"]
-                            if song_title.lower().startswith(prefix_lower):
-                                results.append(song_title)
+        suggestions = [
+            song["title"]
+            for band in music_data if band["name"].lower() == bandName.lower()
+            for album in band["albums"] if album["title"].lower() == albumTitle.lower()
+            for song in album["songs"]
+            if song["title"].lower().startswith(prefix_lower)
+        ]
 
-    return results
+    return suggestions
