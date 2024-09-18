@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - solr
+    networks:
+      - app-network
+    environment:
+      - REDIS_HOST=redis
+      - SOLR_HOST=solr
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  solr:
+    build: ./solr
+    ports:
+      - "8983:8983"
+    networks:
+      - app-network
+    volumes:
+      - solr-data:/var/solr
+
+volumes:
+  solr-data:
+
+
+networks:
+  app-network:
+    driver: bridge
