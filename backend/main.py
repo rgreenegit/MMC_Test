@@ -2,7 +2,7 @@ from typing import List, Optional
 import json
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from trie import Trie
+from utils.trie import Trie
 import pysolr
 import redis
 
@@ -22,7 +22,7 @@ solr_client = pysolr.Solr(
 redis_client = redis.Redis(host='redis', port=6379,
                            db=0, decode_responses=True)
 
-with open("data.json") as f:
+with open("data/data.json") as f:
     music_data = json.load(f)
 
 music_data_trie = Trie()
@@ -51,14 +51,14 @@ async def autocomplete_v2(prefix: str, bandName: Optional[str] = None, albumTitl
 
         if not bandName and not albumTitle:
             solr_results = solr_client.search(
-                f"band_name:{prefix_filtered}", rows=100)
+                f"{{!term f=band_name}}{prefix.lower()}", rows=100)
             suggestions = list(set(doc["band_name"]
                                    for doc in solr_results.docs if "band_name" in doc))
 
         elif bandName and not albumTitle:
             bandName_filtered = "+".join(bandName.lower().split())
             solr_results = solr_client.search(
-                f"band_name:{bandName_filtered} AND album_title:{prefix_filtered}", rows=100)
+                f"band_name:{bandName_filtered} AND {{!term f=album_title}}{prefix.lower()}", rows=100)
             suggestions = list(set(doc["album_title"]
                                    for doc in solr_results.docs if "album_title" in doc))
 
@@ -66,7 +66,7 @@ async def autocomplete_v2(prefix: str, bandName: Optional[str] = None, albumTitl
             bandName_filtered = "+".join(bandName.lower().split())
             albumTitle_filtered = "+".join(albumTitle.lower().split())
             solr_results = solr_client.search(
-                f"band_name:{bandName_filtered} AND album_title:{albumTitle_filtered } AND song_title:{prefix_filtered}", rows=100)
+                f"band_name:{bandName_filtered} AND album_title:{albumTitle_filtered } AND {{!term f=song_title}}{prefix.lower()}", rows=100)
             suggestions = list(set(doc["song_title"]
                                    for doc in solr_results.docs if "song_title" in doc))
 
