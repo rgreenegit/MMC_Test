@@ -5,7 +5,7 @@ import argparse
 solr_client = pysolr.Solr(
     'http://localhost:8983/solr/autocomplete_core', timeout=10)
 
-with open("../data.json", 'r') as file:
+with open("../data/data.json", 'r') as file:
     data = json.load(file)
 
 names = []
