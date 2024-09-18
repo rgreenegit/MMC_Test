@@ -17,9 +17,9 @@ app.add_middleware(
 )
 
 solr_client = pysolr.Solr(
-    'http://localhost:8983/solr/autocomplete_core', timeout=10)
+    'http://solr:8983/solr/autocomplete_core', timeout=10)
 
-redis_client = redis.Redis(host='localhost', port=6379,
+redis_client = redis.Redis(host='redis', port=6379,
                            db=0, decode_responses=True)
 
 with open("data.json") as f:
